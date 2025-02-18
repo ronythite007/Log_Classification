@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Classification</title>
+    <style>
+        /* General Body Style */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Container Style */
+        .container {
+            max-width: 900px;
+            width: 100%;
+            padding: 30px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #4f72f4;
+        }
+
+        /* File Input Styling */
+        input[type="file"] {
+            padding: 12px;
+            border: 2px solid #4f72f4;
+            border-radius: 8px;
+            width: 100%;
+            margin: 15px 0;
+            font-size: 16px;
+            color: #333;
+            background-color: #f1f6fc;
+        }
+
+        input[type="file"]:hover {
+            border-color: #2c51c1;
+            background-color: #e0e9fc;
+        }
+
+        button {
+            background-color: #4f72f4;
+            color: white;
+            font-size: 16px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2c51c1;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            margin-top: 40px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #4f72f4;
+            color: white;
+            font-size: 16px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        /* Hover Effect on Rows */
+        tr:hover td {
+            background-color: #f1f6fc;
+        }
+
+        /* Download Button Styling */
+        #download-container {
+            margin-top: 20px;
+        }
+
+        #download-link {
+            text-decoration: none;
+        }
+
+        #download-link button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        #download-link button:hover {
+            background-color: #218838;
+        }
+
+        /* Response message styling */
+        #response-message {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        /* Media Queries for Smaller Screens */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            button, input[type="file"] {
+                width: 100%;
+                font-size: 14px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Log Classification</h1>
+        <form id="file-upload-form" enctype="multipart/form-data">
+            <input type="file" id="file-input" name="file" accept=".csv" required>
+            <br><br>
+            <button type="submit">Upload and Classify</button>
+        </form>
+
+        <!-- Table to display classified logs -->
+        <div id="table-container" style="display: none;">
+            <h2>Classified Logs</h2>
+            <table id="classified-table">
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Log Message</th>
+                        <th>Target Label</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically added here -->
+                </tbody>
+            </table>
+
+            <!-- Link to download the CSV -->
+            <div id="download-container">
+                <a id="download-link" href="#" download>
+                    <button>Download Classified CSV</button>
+                </a>
+            </div>
+        </div>
+
+        <div id="response-message"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById("file-upload-form");
+        const fileInput = document.getElementById("file-input");
+        const tableContainer = document.getElementById("table-container");
+        const classifiedTable = document.getElementById("classified-table").getElementsByTagName('tbody')[0];
+        const responseMessage = document.getElementById("response-message");
+        const downloadLink = document.getElementById("download-link");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch("/classify/", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to classify log file");
+                }
+
+                const result = await response.json();
+                const data = result.data;
+                const filePath = result.csv_file;
+
+                // Clear any existing table rows
+                classifiedTable.innerHTML = "";
+
+                // Add the received data to the table
+                data.forEach((row) => {
+                    const tr = document.createElement("tr");
+                    const sourceCell = document.createElement("td");
+                    const logMessageCell = document.createElement("td");
+                    const labelCell = document.createElement("td");
+
+                    sourceCell.textContent = row.source;
+                    logMessageCell.textContent = row.log_message;
+                    labelCell.textContent = row.target_label;
+
+                    tr.appendChild(sourceCell);
+                    tr.appendChild(logMessageCell);
+                    tr.appendChild(labelCell);
+                    classifiedTable.appendChild(tr);
+                });
+
+                // Display the table and download button
+                tableContainer.style.display = "block";
+                responseMessage.textContent = result.message;
+
+                // Set the download link
+                downloadLink.href = filePath;
+                downloadLink.download = "classified_logs.csv";
+            } catch (error) {
+                responseMessage.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
