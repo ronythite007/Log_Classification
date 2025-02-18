@@ -23,7 +23,7 @@ Below is a flowchart illustrating the log classification process:
 ![Log Classification Flowchart](![Screenshot 2025-02-18 082231](https://github.com/user-attachments/assets/fa8f9ff7-e951-4bc9-865e-44eb66f27068))
 
 ## Features
-- **BBERT-based log classification: Embedding for classification using a pre-trained BERT model.
+- **BBERT-based log classification**: Embedding for classification using a pre-trained BERT model.
 - **Large Language Models (LLMs)**: Incorporates LLMs for improved context-based classification(Used Groq).
 - **Regex-based filtering**: Applies rule-based regex patterns for predefined log categories.
 - **Logistic Regression Model**: Implements a machine learning-based classification approach for log messages.
@@ -57,7 +57,13 @@ Ensure you have **Python 3.8+** installed along with the required dependencies.
   ```bash
   uvicorn main:app --reload
   ```
-  
+  ## Demo 
+Below is a Demo of Sever :
+
+![Log Classification Demo](![image](https://github.com/user-attachments/assets/35eefcac-2b64-4a82-93ac-35ee76abc998)
+)
+![Log Classification Demo](![Screenshot 2025-02-18 092609](https://github.com/user-attachments/assets/4553c3e6-dca4-48dc-ae88-cee707777e16)
+)
 - **Upload a CSV file containing logs** to the FastAPI endpoint for classification. Ensure the file has the following columns:
   - `source`
   - `log_message`
