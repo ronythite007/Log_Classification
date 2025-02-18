@@ -60,7 +60,7 @@ Ensure you have **Python 3.8+** installed along with the required dependencies.
   ## Demo 
 Below is a Demo of Sever :
 
-![Log Classification Demo](![image](https://github.com/user-attachments/assets/35eefcac-2b64-4a82-93ac-35ee76abc998)
+![Log Classification Demo](![Screenshot 2025-02-18 092609](https://github.com/user-attachments/assets/35eefcac-2b64-4a82-93ac-35ee76abc998)
 )
 ![Log Classification Demo](![Screenshot 2025-02-18 092609](https://github.com/user-attachments/assets/4553c3e6-dca4-48dc-ae88-cee707777e16)
 )
